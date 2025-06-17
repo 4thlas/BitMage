@@ -1,4 +1,5 @@
 package bitmage;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -31,13 +32,12 @@ public class Main
         try
         {
             Image img = new Image(path);
-            System.out.println("Ok");
+
+            img.print();
         }
-        catch (InputMismatchException  e)
+        catch (InputMismatchException | IOException e)
         {
             System.out.println("Error: " + e.getMessage());
         }
-
-
     }
 }
