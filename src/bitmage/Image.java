@@ -1,8 +1,12 @@
 package bitmage;
+import bitmage.Exceptions.ImageTooBigException;
+import bitmage.Utils.FileResult;
+import bitmage.Utils.FileStatus;
+import bitmage.Utils.Validation;
+
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -11,32 +15,46 @@ class Image
 {
     private final String path;
     private final String[] asciiMap = {"  ", "··", "--", "++", "**", "%%", "##", "@@"};
-    private final int MAX_WIDTH = 256;
+    //private final int MAX_WIDTH = 256;
 
-    public Image(String path)
+    private ArrayList<ArrayList<String>> renderedImage;
+
+    public Image(String path) throws IOException
     {
-        if (Main.validatePath(path))
+        if (Validation.validatePath(path).getStatus() == FileStatus.FILE_OK)
         {
             this.path = path;
         }
         else
         {
-            throw new InputMismatchException("Invalid path syntax.");
+            throw new IOException(Validation.validatePath(path).getMessage());
         }
     }
 
     // Open and prepare image from file
-    private BufferedImage openFile(String path) throws IOException, FileNotFoundException
-    {
+    private BufferedImage openFile(String path) throws IOException {
+        FileResult result = Validation.validatePath(path);
+
+        switch (result.getStatus())
+        {
+            case FILE_NOT_FOUND:
+            case INVALID_FILE_EXTENSION:
+            case IS_NOT_FILE:
+            case INVALID_PATH_SYNTAX:
+            case FILE_ACCESS_DENIED:
+                throw new IOException(result.getMessage());
+            case FILE_OK:
+                break;
+            default:
+                throw new IOException("Unknown Error");
+        }
+
         File file = new File(path);
-        if (!file.exists() || !file.isFile())
-        {
-            throw new FileNotFoundException("File not found.");
-        }
-        if (ImageIO.read(file).getWidth() > MAX_WIDTH)
-        {
-            throw new ImageTooBigException("Maximum allowed image width is "+ MAX_WIDTH +" px.");
-        }
+
+        //if (ImageIO.read(file).getWidth() > MAX_WIDTH)
+        //{
+         //   throw new ImageTooBigException("Maximum allowed image width is "+ MAX_WIDTH +" px.");
+        //}
 
         return ImageIO.read(file);
     }
@@ -58,7 +76,6 @@ class Image
                 int pixel = rawImage.getRGB(x, y);
 
                 // Read pixel properties
-                int alpha = (pixel >> 24) & 0xff;
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue  = pixel & 0xff;
@@ -77,12 +94,16 @@ class Image
         return renderedImg;
     }
 
+    public ArrayList<ArrayList<String>> getRenderedImage()
+    {
+        return renderedImage;
+    }
+
     // Print rendered image
     public void print() throws IOException, FileNotFoundException
     {
         BufferedImage rawImage = openFile(path);
-        render(rawImage);
-        ArrayList<ArrayList<String>> renderedImage = render(rawImage);
+        renderedImage = render(rawImage);
 
         int width = renderedImage.get(0).size();
         int height = renderedImage.size();
