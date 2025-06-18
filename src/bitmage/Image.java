@@ -15,7 +15,6 @@ class Image
 {
     private final String path;
     private final String[] asciiMap = {"  ", "··", "--", "++", "**", "%%", "##", "@@"};
-    //private final int MAX_WIDTH = 256;
 
     private ArrayList<ArrayList<String>> renderedImage;
 
@@ -50,11 +49,6 @@ class Image
         }
 
         File file = new File(path);
-
-        //if (ImageIO.read(file).getWidth() > MAX_WIDTH)
-        //{
-         //   throw new ImageTooBigException("Maximum allowed image width is "+ MAX_WIDTH +" px.");
-        //}
 
         return ImageIO.read(file);
     }

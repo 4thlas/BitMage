@@ -38,5 +38,8 @@ public class Main
         {
             System.out.println("Error: " + e.getMessage());
         }
+
+        System.out.println("Press ENTER to finish.");
+        new Scanner(System.in).nextLine();
     }
 }
