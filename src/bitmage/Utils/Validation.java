@@ -1,13 +1,17 @@
 package bitmage.Utils;
 
+import javax.imageio.IIOException;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.util.HashSet;
 
 public class Validation
 {
-    private final static String[] allowedExtensions = {"JPG", "jpg", "tiff", "bmp", "BMP", "gif", "GIF", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
+    private final static String[] allowedExtensions = {"txt", "JPG", "jpg", "tiff", "bmp", "BMP", "gif", "GIF", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
+    private final static char[] allowedChars = {' ', '·', '-', '+', '*', '%', '#', '@'};
 
     public static String[] getAllowedExtensions()
     {
@@ -20,17 +24,10 @@ public class Validation
         return parts[parts.length - 1];
     }
 
+    // Check if file can be opened and is supported
     public static FileResult validatePath(String path)
     {
-        final Pattern pathPattern = Pattern.compile("^(?<ParentPath>(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\s\\.]+\\\\[\\w\\s\\.$]+)\\\\(?:[\\w\\s\\.]+\\\\)*)(?<BaseName>[\\w\\s\\.]*?)$");
-        Matcher matcher = pathPattern.matcher(path);
-
         String extension = getFileExtension(path);
-
-        if (!matcher.find())
-        {
-            return new FileResult(FileStatus.INVALID_PATH_SYNTAX, "Path syntax is invalid.");
-        }
 
         File file = new File(path);
 
@@ -54,5 +51,18 @@ public class Validation
         return new FileResult(FileStatus.FILE_OK, "Success");
     }
 
+    // Check if text file can be rendered
+    public static FileResult validateTxtFile(String path) throws IOException
+    {
+        String content = Files.readString(Paths.get(path));
 
+        for (Character c : content.toCharArray())
+        {
+            if (new String(allowedChars).indexOf(c) == -1)
+            {
+                return new FileResult(FileStatus.CANNOT_RENDER, "Cannot render this file.");
+            }
+        }
+        return new FileResult(FileStatus.FILE_OK, "Success");
+    }
 }

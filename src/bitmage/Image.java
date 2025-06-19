@@ -1,5 +1,4 @@
 package bitmage;
-import bitmage.Exceptions.ImageTooBigException;
 import bitmage.Utils.FileResult;
 import bitmage.Utils.FileStatus;
 import bitmage.Utils.Validation;
@@ -9,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import javax.imageio.ImageIO;
 
 class Image
@@ -16,7 +16,8 @@ class Image
     private final String path;
     private final String[] asciiMap = {"  ", "··", "--", "++", "**", "%%", "##", "@@"};
 
-    private ArrayList<ArrayList<String>> renderedImage;
+    private String srcExtension; // Holds the source file extension, required for print()
+    private ArrayList<ArrayList<String>> renderedImage = null;
 
     public Image(String path) throws IOException
     {
@@ -31,15 +32,15 @@ class Image
     }
 
     // Open and prepare image from file
-    private BufferedImage openFile(String path) throws IOException {
+    private File openFile(String path) throws IOException {
         FileResult result = Validation.validatePath(path);
+        srcExtension = Validation.getFileExtension(path);
 
         switch (result.getStatus())
         {
             case FILE_NOT_FOUND:
             case INVALID_FILE_EXTENSION:
             case IS_NOT_FILE:
-            case INVALID_PATH_SYNTAX:
             case FILE_ACCESS_DENIED:
                 throw new IOException(result.getMessage());
             case FILE_OK:
@@ -50,16 +51,20 @@ class Image
 
         File file = new File(path);
 
-        return ImageIO.read(file);
+        return file;
     }
 
     // Render image from file
-    private ArrayList<ArrayList<String>> render(BufferedImage rawImage)
+    private ArrayList<ArrayList<String>> render(File rawImg) throws IOException
     {
+        //TODO: handle .txt files
+
+        ArrayList<ArrayList<String>> renderBuffer = new ArrayList<>();
+
+        BufferedImage rawImage = ImageIO.read(rawImg);
+
         int width = rawImage.getWidth();
         int height = rawImage.getHeight();
-
-        ArrayList<ArrayList<String>> renderedImg = new ArrayList<>();
 
         for (int y = 0; y < height; y++)
         {
@@ -83,9 +88,10 @@ class Image
 
                 row.add(pixelChar);
             }
-            renderedImg.add(row);
+            renderBuffer.add(row);
         }
-        return renderedImg;
+
+        return renderBuffer;
     }
 
     public ArrayList<ArrayList<String>> getRenderedImage()
@@ -96,8 +102,12 @@ class Image
     // Print rendered image
     public void print() throws IOException, FileNotFoundException
     {
-        BufferedImage rawImage = openFile(path);
-        renderedImage = render(rawImage);
+        if (renderedImage == null) // Render image if not rendered
+        {
+            File rawImg = openFile(path);
+            renderedImage = render(rawImg);
+        }
+
 
         int width = renderedImage.get(0).size();
         int height = renderedImage.size();

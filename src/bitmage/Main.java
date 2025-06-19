@@ -1,5 +1,4 @@
 package bitmage;
-import bitmage.Exceptions.ImageTooBigException;
 import bitmage.Utils.FileStatus;
 import bitmage.Utils.Validation;
 
@@ -11,7 +10,6 @@ public class Main
 {
     public static void main(String[] args)
     {
-
         Scanner scanner = new Scanner(System.in);
         String path;
 
@@ -34,7 +32,7 @@ public class Main
 
             System.out.println("\n\n\n Done.");
         }
-        catch (InputMismatchException | IOException | ImageTooBigException e)
+        catch (InputMismatchException | IOException e)
         {
             System.out.println("Error: " + e.getMessage());
         }
