@@ -3,17 +3,12 @@
 ### Turns images to ASCII art in terminal.<br/>
 Made with JAVA only. <br/> <br/>
 
-## How to use
-
-Paste the following command into CMD:
-
-***java -jar \<path to the BitMage.jar file>***
 
 > [!WARNING]
-> **Set CMD's screen buffer width to max - CMD will not display images properly, if source image is wider than screen buffer<br/>**
+> **Set console screen buffer width to max before generating anything** - console will not display images properly, if source image is wider than screen buffer<br/>
 
 > [!NOTE]
-> CMD may have issues with displaying large images. 
+> Console may have issues with displaying large images. If the image is cut in half, **undock and dock console window**, it should fix it.
 
 ### Supported image types:
 
