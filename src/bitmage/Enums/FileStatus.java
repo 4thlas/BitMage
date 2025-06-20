@@ -1,4 +1,4 @@
-package bitmage.Utils;
+package bitmage.Enums;
 
 public enum FileStatus
 {

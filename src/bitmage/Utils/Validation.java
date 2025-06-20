@@ -1,26 +1,34 @@
 package bitmage.Utils;
 
-import javax.imageio.IIOException;
+import bitmage.Enums.FileStatus;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.io.IOException;
-import java.util.HashSet;
 
 public class Validation
 {
-    private final static String[] allowedExtensions = {"txt", "JPG", "jpg", "tiff", "bmp", "BMP", "gif", "GIF", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
-    private final static char[] allowedChars = {' ', '·', '-', '+', '*', '%', '#', '@'};
+    private final static String[] allowedExtensions = {"JPG", "jpg", "tiff", "bmp", "BMP", "gif", "GIF", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
+    private final static char[] allowedChars = {' ', '.', ',', ':', '-', '~', '=', '+', '*', '#', '%', '&', '@', '█'};
 
     public static String[] getAllowedExtensions()
     {
         return allowedExtensions;
     }
 
-    public static String getFileExtension(String fileName)
+    public static String getFileName(String path)
     {
-        String[] parts = fileName.split("\\.");
+        String[] parts = path.split("/");
+        String fullName = parts[parts.length - 1];
+
+        return fullName.split("\\.")[0];
+    }
+
+    public static String getFileExtension(String path)
+    {
+        String[] parts = path.split("\\.");
         return parts[parts.length - 1];
     }
 

@@ -1,5 +1,7 @@
 package bitmage.Utils;
 
+import bitmage.Enums.FileStatus;
+
 public class FileResult
 {
     private FileStatus status;

@@ -1,8 +1,9 @@
 package bitmage;
-import bitmage.Utils.FileStatus;
+import bitmage.Enums.FileStatus;
 import bitmage.Utils.Validation;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -10,34 +11,64 @@ public class Main
 {
     public static void main(String[] args)
     {
+        ArrayList<Image> images = new ArrayList<>();
+
         Scanner scanner = new Scanner(System.in);
         String path;
 
-        do
+        System.out.println("\nSet console screen buffer width to max before generating anything - console will not display images properly, if source image is wider than screen buffer\n");
+        System.out.println("""
+            Manual:\s
+            \s
+                "gen (options) (filepath)" - generate from file\s
+                \s
+                Example:\s
+                    gen -m -i C:\\Users\\John_Doe\\Image.png
+                    \s
+                    Options:\s
+                        m - render image with 16-char map (default - 8)\s
+                        i - invert image colors\s
+                    \s
+                    Default options will be applied if not specified:\s
+                        8-char map\s
+                        Normal image colors\s
+                   \s
+                "exit" - close the program
+        """);
+
+        mainLoop:
+        while (true)
         {
-            System.out.print("Enter image path: "); path = scanner.next();
-            if (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK)
+            do
             {
-                System.out.println("\n" + Validation.validatePath(path).getMessage());
+                System.out.print(">>> "); path = scanner.next();
+
+                if (path.equalsIgnoreCase("exit"))
+                {
+                    break mainLoop;
+                }
+
+                if (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK)
+                {
+                    System.out.println("\n" + Validation.validatePath(path).getMessage());
+                }
+
+            } while (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK);
+
+            try
+            {
+                System.out.println("\n\n\n");
+
+                images.add(new Image(path));
+
+                images.getLast().print();
+
+                System.out.println("\n\n == Done == \n");
             }
-        } while (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK);
-
-        try
-        {
-            System.out.println("\n\n\n");
-
-            Image img = new Image(path);
-
-            img.print();
-
-            System.out.println("\n\n\n Done.");
+            catch (InputMismatchException | IOException e)
+            {
+                System.out.println("Error: " + e.getMessage());
+            }
         }
-        catch (InputMismatchException | IOException e)
-        {
-            System.out.println("Error: " + e.getMessage());
-        }
-
-        System.out.println("Press ENTER to finish.");
-        new Scanner(System.in).nextLine();
     }
 }
