@@ -3,7 +3,6 @@ package bitmage.Utils;
 import bitmage.Enums.Option;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public class Command
 {
