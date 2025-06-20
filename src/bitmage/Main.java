@@ -1,5 +1,6 @@
 package bitmage;
 import bitmage.Enums.FileStatus;
+import bitmage.Utils.Command;
 import bitmage.Utils.Validation;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class Main
         ArrayList<Image> images = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
-        String path;
+        String path = "";
 
         System.out.println("\nSet console screen buffer width to max before generating anything - console will not display images properly, if source image is wider than screen buffer\n");
         System.out.println("""
@@ -25,35 +26,53 @@ public class Main
                 Example:\s
                     gen -m -i C:\\Users\\John_Doe\\Image.png
                     \s
-                    Options:\s
-                        m - render image with 16-char map (default - 8)\s
-                        i - invert image colors\s
-                    \s
-                    Default options will be applied if not specified:\s
-                        8-char map\s
-                        Normal image colors\s
-                   \s
+                Options:\s
+                    m - render image with 16-char map\s
+                    i - invert image colors\s
+                \s
+                Default options will be applied if not specified:\s
+                    8-char map\s
+                    Normal image colors\s
+               \s
                 "exit" - close the program
         """);
 
         mainLoop:
         while (true)
         {
+            String rawCommand;
+
+            boolean pass = false;
+
             do
             {
-                System.out.print(">>> "); path = scanner.next();
+                System.out.print(">>> "); rawCommand = scanner.nextLine();
 
-                if (path.equalsIgnoreCase("exit"))
+                if (rawCommand.equalsIgnoreCase("exit"))
                 {
                     break mainLoop;
                 }
 
-                if (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK)
+                try
                 {
-                    System.out.println("\n" + Validation.validatePath(path).getMessage());
+                    Command command = new Command(rawCommand);
+                    path = command.getPath();
+
+                    if (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK)
+                    {
+                        System.out.println("\n" + Validation.validatePath(path).getMessage());
+                    }
+                    else
+                    {
+                        pass = true;
+                    }
+                }
+                catch (IllegalArgumentException e)
+                {
+                    System.out.println("\n" + e.getMessage());
                 }
 
-            } while (Validation.validatePath(path).getStatus() != FileStatus.FILE_OK);
+            } while (!pass);
 
             try
             {
