@@ -27,7 +27,9 @@ public class Main
             "gen (options) (filepath)" - generate from file\s
             \s
             Example:\s
-                gen -m -i C:\\Users\\John_Doe\\Image.png
+                gen -m -i C:\\Users\\John_Doe\\Image.png\s
+                \s
+                Wrap filepath in parentheses if it contains whitespaces
                 \s
             Options:\s
                 m - render image with 16-char map\s
@@ -38,7 +40,7 @@ public class Main
                 Normal image colors\s
            \s
             "exit" - close the program
-            """;
+           \s""";
 
         System.out.println();
 

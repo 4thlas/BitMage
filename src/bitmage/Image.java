@@ -84,8 +84,6 @@ class Image
 
         String[] usedMap = (mapType == Option.MAP_16) ? asciiMaps.get("map16") : asciiMaps.get("map8");
 
-        Boolean invertedColors = colorMode == Option.INVERTED;
-
         ArrayList<ArrayList<String>> renderBuffer = new ArrayList<>();
 
         BufferedImage rawImage = ImageIO.read(rawImg);
@@ -120,7 +118,7 @@ class Image
                 }
                 else
                 {
-                    // Use inverted id's
+                    // Invert id's
                     int charId = Math.min(density, usedMap.length - 1);
                     int invCharId = usedMap.length - 1 - charId;
                     pixelChar = usedMap[invCharId];
