@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Validation
 {
-    private final static String[] allowedExtensions = {"JPG", "jpg", "tiff", "bmp", "BMP", "gif", "GIF", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
+    private final static String[] allowedExtensions = {"JPG", "jpg", "tiff", "bmp", "BMP", "WBMP", "png", "PNG", "JPEG", "tif", "TIF", "TIFF", "wbmp", "jpeg"};
     private final static char[] allowedChars = {' ', '.', ',', ':', '-', '~', '=', '+', '*', '#', '%', '&', '@', '█'};
 
     public static String[] getAllowedExtensions()
