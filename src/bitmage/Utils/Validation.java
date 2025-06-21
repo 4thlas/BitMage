@@ -41,11 +41,11 @@ public class Validation
 
         if (!file.exists())
         {
-            return new FileResult(FileStatus.FILE_NOT_FOUND, "File not found.");
+            return new FileResult(FileStatus.FILE_NOT_FOUND, "File " + path + " not found.");
         }
         if (!file.isFile())
         {
-            return new FileResult(FileStatus.IS_NOT_FILE, "Path is not a file.");
+            return new FileResult(FileStatus.IS_NOT_FILE, path + " is not a file.");
         }
         if (!file.canRead())
         {

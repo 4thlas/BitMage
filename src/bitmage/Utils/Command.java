@@ -9,7 +9,7 @@ public class Command
     private final String rawCommand;
     private Option mapTypeOption = Option.MAP_8; // 8 or 16 char map
     private Option colorModeOption = Option.NORMAL; // Normal or inverted display
-    private String path;
+    private String path = "";
 
     public Command(String rawCommand)
     {
@@ -43,13 +43,12 @@ public class Command
             throw new IllegalArgumentException("Unknown command: \"" + parts[0] + "\"");
         }
 
-        boolean optionSegment = true;
-        StringBuilder pathBuffer = new StringBuilder();
+        int pathSegment = 1;
 
         for (int i = 1; i < parts.length; i++)
         {
             // Detect and interpret options
-            if (optionSegment && parts[i].charAt(0) == '-' && parts[i].length() == 2)
+            if (parts[i].charAt(0) == '-' && parts[i].length() == 2)
             {
                 switch (parts[i].charAt(1))
                 {
@@ -65,11 +64,41 @@ public class Command
             }
             else
             {
-                optionSegment = false;
-                pathBuffer.append(parts[i]);
+                pathSegment = i;
+                break;
             }
         }
 
-        path = pathBuffer.toString();
+        // Count parentheses
+        int parCount = rawCommand.length() - rawCommand.replace("\"", "").length();
+
+        // Get filepath
+        switch (parCount)
+        {
+            case 0:
+            {
+                path = parts[pathSegment];
+                break;
+            }
+            case 2:
+            {
+                for (int i = rawCommand.indexOf("\"") + 1; i < rawCommand.length(); i++)
+                {
+                    if (rawCommand.charAt(i) == '"')
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        path += rawCommand.charAt(i);
+                    }
+                }
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Invalid syntax.");
+        }
+
+        System.out.println(path+ "\n");
     }
 }
