@@ -1,7 +1,7 @@
 # BitMage - Turn Image To ASCII Art
 
 ### Turns images to ASCII art in terminal.<br/>
-Made with JAVA only. <br/> <br/>
+Made with Java. <br/> <br/>
 
 
 > [!WARNING]
@@ -17,8 +17,6 @@ Made with JAVA only. <br/> <br/>
 - tiff
 - bmp
 - BMP
-- gif
-- GIF
 - WBMP
 - png
 - PNG
