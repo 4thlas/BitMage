@@ -24,8 +24,8 @@ public class Command
         }
     }
 
-    public Option getMapTypeOption() { return mapTypeOption; }
-    public Option getColorModeOption() { return colorModeOption; }
+    public Option getMapType() { return mapTypeOption; }
+    public Option getColorMode() { return colorModeOption; }
     public String getPath() { return path; }
 
     // Extract options and filepath
@@ -98,7 +98,5 @@ public class Command
             default:
                 throw new IllegalArgumentException("Invalid syntax.");
         }
-
-        System.out.println(path+ "\n");
     }
 }

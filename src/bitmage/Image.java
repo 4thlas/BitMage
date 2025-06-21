@@ -1,8 +1,9 @@
 package bitmage;
+
 import bitmage.Utils.FileResult;
 import bitmage.Enums.FileStatus;
+import bitmage.Enums.Option;
 import bitmage.Utils.Validation;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.io.File;
@@ -13,13 +14,13 @@ import javax.imageio.ImageIO;
 class Image
 {
     private final String path;
+    private final Option mapType;
+    private final Option colorMode;
 
     private final Map<String, String[]> asciiMaps = Map.of(
             "map8", new String[] {"  ", "··", "--", "++", "**", "%%", "##", "@@"},
             "map16", new String[] { "  ", "..", "::", "--", "==", "++", "**", "oo", "OO", "##", "%%", "&&", "88", "BB", "@@", "██" }
     );
-
-    private final String[] currentAsciiMap = asciiMaps.get("map8");
 
     private String srcFileName; // Holds the source file name
     private String srcFileExt; // Holds the source file extension
@@ -28,9 +29,21 @@ class Image
 
     public Image(String path) throws IOException
     {
+        this(path, Option.MAP_8, Option.NORMAL);
+    }
+
+    public Image(String path, Option mapType) throws IOException
+    {
+        this(path, mapType, Option.NORMAL);
+    }
+
+    public Image(String path, Option mapType, Option colorMode) throws IOException
+    {
         if (Validation.validatePath(path).getStatus() == FileStatus.FILE_OK)
         {
             this.path = path.replace('\\', '/');
+            this.mapType = mapType;
+            this.colorMode = colorMode;
         }
         else
         {
@@ -39,7 +52,8 @@ class Image
     }
 
     // Open and prepare image from file
-    private File openFile(String path) throws IOException {
+    private File openFile(String path) throws IOException
+    {
         FileResult result = Validation.validatePath(path);
 
         srcFileName = Validation.getFileName(path);
@@ -64,9 +78,13 @@ class Image
     }
 
     // Render image from file
-    private ArrayList<ArrayList<String>> render(File rawImg) throws IOException
+    private ArrayList<ArrayList<String>> render(File rawImg, Option mapType, Option colorMode) throws IOException
     {
         //TODO: handle .txt files
+
+        String[] usedMap = (mapType == Option.MAP_16) ? asciiMaps.get("map16") : asciiMaps.get("map8");
+
+        Boolean invertedColors = colorMode == Option.INVERTED;
 
         ArrayList<ArrayList<String>> renderBuffer = new ArrayList<>();
 
@@ -92,8 +110,21 @@ class Image
                 double brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 
                 // Scale the brightness value to ASCII map array size and convert it to a char
-                int brightnessIndex = (int)(brightness / 256 * currentAsciiMap.length);
-                String pixelChar = currentAsciiMap[Math.min(brightnessIndex, currentAsciiMap.length - 1)];
+                int density = (int)(brightness / 256 * usedMap.length);
+
+                String pixelChar;
+
+                if (colorMode == Option.NORMAL)
+                {
+                    pixelChar = usedMap[Math.min(density, usedMap.length - 1)];
+                }
+                else
+                {
+                    // Use inverted id's
+                    int charId = Math.min(density, usedMap.length - 1);
+                    int invCharId = usedMap.length - 1 - charId;
+                    pixelChar = usedMap[invCharId];
+                }
 
                 row.add(pixelChar);
             }
@@ -111,7 +142,7 @@ class Image
         if (renderedImage == null) // Render image if not rendered
         {
             File rawImg = openFile(path);
-            renderedImage = render(rawImg);
+            renderedImage = render(rawImg, mapType, colorMode);
         }
 
         int width = renderedImage.get(0).size();
